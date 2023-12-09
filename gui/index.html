@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			#mainDiv{
+				margin-left: auto;
+				margin-right: auto;
+				width: 95vw;
+			}
+			
+			.liveImage{
+				width: 100%;
+			}
+			
+			.tempchuj{
+				height: calc((95vw * 127 / 678) * 1.4);
+				background-color: #000;
+				margin-bottom: 15px;
+			}
+			
+			.image-text-overlay{
+				height: calc((95vw * 127 / 678) * 0.3);
+				margin-top: calc((95vw * 127 / 678) * -0.42);
+				font-size: calc((95vw * 127 / 678) * 0.15);
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="mainDiv">
+			<div class="imgdisp">
+				<div class="tempchuj"><img id="diffEdge" class="liveImage" src="diffEdge.png" alt="buff..."></div>
+				<b><dir id="edgeText" class="image-text-overlay"></div></b>
+			</div>
+			<div class="imgdisp">
+				<div class="tempchuj"><img id="diffColor" class="liveImage" src="diffColor.jpg" alt="buff..."></div>
+				<b><dir id="colorText" class="image-text-overlay"></div></b>
+			</div>
+			<br />
+			<b><div id="deathsBox" style="font-size: 24px; margin-left: 25px;"></div></b>
+		</div>
+  
+		<script>
+		var imgEdge = document.getElementById('diffEdge');
+		var imgColor = document.getElementById('diffColor');
+		var diffEdgeBox = document.getElementById('edgeText');
+		var diffColorBox = document.getElementById('colorText');
+		var deathBox = document.getElementById('deathsBox');
+		var edgeMax = 0;
+		var colorMax = 0;
+		
+		function displayText() {
+			fetch('data.txt')
+				.then(response => response.text())
+				.then(data => {
+					var values = data.split('\n');
+					if (values.length >= 3) {
+						if(parseFloat(values[1]) > edgeMax){
+							edgeMax = parseFloat(values[1].slice(0,6));
+						}
+						if(parseFloat(values[2]) > colorMax){
+							colorMax = parseFloat(values[2].slice(0,6));
+						}
+						deathBox.innerHTML = values[0] + " deaths";
+						diffEdgeBox.innerHTML = values[1].slice(0,6) + "% | max: " + edgeMax + "%";
+						diffColorBox.innerHTML = values[2].slice(0,6) + "% | max: " + colorMax + "%";
+					}
+				});
+				
+		}
+		
+		function updateImage() {
+			var timestamp = new Date().getTime();
+			imgEdge.src = 'diffEdge.png?' + timestamp;
+			imgColor.src = 'diffColor.png?' + timestamp;
+			displayText();
+		}
+		
+		function resetMaxes() {
+			edgeMax = 0;
+		    colorMax = 0;
+		}
+		
+		setInterval(updateImage, 10);
+		</script>
+		<br />
+		<br />
+		<br />
+		<button onClick="resetMaxes();">RESET</button>
+		
+	</body>
+</html>
